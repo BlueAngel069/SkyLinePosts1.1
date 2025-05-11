@@ -38,7 +38,7 @@ const upload = multer({
 
 // Simple in-memory session (not for production)
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret_key',
+  secret: process.env.SESSION_SECRET || 'aP9fD3vL1k!qWzR8Xy2@2025',
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false }
