@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Friends</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Friends</h1>
+
+  <% if (friends.length > 0) { %>
+    <ul>
+      <% friends.forEach(friend => { %>
+        <li>
+          <a href="/profile/users/<%= friend %>"><%= friend %></a>
+          <form action="/messages/start" method="POST" style="display: contents;">
+            <input type="hidden" name="recipient" value="<%= friend %>">
+            <button type="submit" class="button">Message</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>You have no friends yet.</p>
+  <% } %>
+
+  <p>
+    <a href="/friends/add">Send a New Friend Request</a><br>
+    <a href="/friends/requests">View Friend Requests</a>
+  </p>
+
+  <br>
+  <a href="/blog/dashboard">← Back to Dashboard</a>
+</body>
+</html>

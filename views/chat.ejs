@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat with <%= recipient %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 80vh;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 80px;
+      margin-bottom: 10px;
+      vertical-align: top;
+      padding-top: 5px;
+      resize: vertical;
+    }
+
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .primary-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <a href="/messages/conversations">← Back to Messages</a>
+
+  <h1>Chat with <%= recipient %></h1>
+  <p id="typing-indicator" style="color: gray; font-style: italic;"></p>
+
+  <% if (messages.length > 0) { %>
+    <ul>
+      <% messages.forEach((message, index) => { %>
+        <li>
+          <strong><%= message.sender %></strong>: <%= message.content %> (<%= message.timestamp %>)
+          <% if (message.sender === user.username && message.id === recipientLastReadId) { %>
+            <span style="color: green; font-style: italic;">Seen</span>
+          <% } %>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No messages yet.</p>
+  <% } %>
+
+  <div class="chat-container">
+    <p id="recipient-typing-indicator" style="color: gray; font-style: italic;"></p>
+    <form action="/messages/chat/<%= recipient %>" method="POST">
+      <textarea name="message" placeholder="Type your message here..." required></textarea>
+      <button type="submit" class="primary-button">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const typingIndicator = document.getElementById('typing-indicator');
+    const recipientTypingIndicator = document.getElementById('recipient-typing-indicator');
+    const messageBox = document.querySelector('textarea');
+    let typingTimeout;
+
+    messageBox.addEventListener('input', () => {
+      fetch('/messages/typing/<%= recipient %>', { method: 'POST' });
+      typingIndicator.textContent = 'You are typing...';
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        fetch('/messages/stop-typing/<%= recipient %>', { method: 'POST' });
+        typingIndicator.textContent = '';
+      }, 3000);
+    });
+
+    function checkRecipientTyping() {
+      fetch(`/messages/typing-status/<%= recipient %>`)
+        .then(res => res.json())
+        .then(data => {
+          recipientTypingIndicator.textContent = data.isTyping ? '<%= recipient %> is typing...' : '';
+        });
+    }
+
+    setInterval(checkRecipientTyping, 3000);
+
+    function fetchMessages() {
+      fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const newMessages = doc.querySelector('ul');
+          if (newMessages) {
+            document.querySelector('ul').innerHTML = newMessages.innerHTML;
+          }
+        });
+    }
+
+    setInterval(fetchMessages, 5000);
+  </script>
+</body>
+</html>

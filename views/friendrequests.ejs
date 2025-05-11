@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Friend Requests</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <h1>Pending Friend Requests</h1>
+
+  <% if (requests.length > 0) { %>
+    <ul>
+      <% requests.forEach(fromUser => { %>
+        <li>
+          <%= fromUser %>
+          <form action="/friends/respond" method="POST" style="display:inline;">
+            <input type="hidden" name="fromUser" value="<%= fromUser %>">
+            <input type="hidden" name="response" value="accepted">
+            <button type="submit">Accept</button>
+          </form>
+          <form action="/friends/respond" method="POST" style="display:inline;">
+            <input type="hidden" name="fromUser" value="<%= fromUser %>">
+            <input type="hidden" name="response" value="rejected">
+            <button type="submit">Reject</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No pending friend requests.</p>
+  <% } %>
+
+  <br>
+  <a href="/friends/page">← Back to Friends List</a>
+</body>
+</html>

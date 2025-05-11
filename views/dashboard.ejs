@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="top-bar">
+    <a href="/logout">Logout</a>
+    <a href="/profile">Profile</a>
+    <a href="/friends/page">Friends List</a>
+    <a href="/messages/conversations">Messages</a>
+  </div>
+  
+
+  <h1>Welcome, <%= user.username %></h1>
+
+  <!-- Create Post Form -->
+  <form action="/blog/create" method="POST" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Post title" required />
+    <br>
+    <textarea name="content" placeholder="Write your post..." required></textarea>
+    <br>
+    <input type="text" name="category" placeholder="Category (optional)" />
+    <br>
+    <input type="file" name="image" accept="image/*" />
+    <br>
+    <button type="submit">Create Post</button>
+  </form>
+
+  <hr>
+
+  <h2>Blog Posts</h2>
+
+  <!-- Filter by Category -->
+  <form method="GET" action="/blog/dashboard" style="margin-bottom: 1em;">
+    <label for="category">Filter by category:</label>
+    <select name="category" id="category" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      <% categories.forEach(cat => { %>
+        <option value="<%= cat %>" <%= cat === selectedCategory ? 'selected' : '' %>><%= cat %></option>
+      <% }) %>
+    </select>
+  </form>
+
+  <!-- Display Posts -->
+  <div class="post-container">
+    <% (posts || []).forEach(post => { %>
+      <div class="post">
+        <h3><%= post.title %></h3>
+        <p><%= post.content %></p>
+
+        <% if (post.image) { %>
+          <img src="<%= post.image %>" alt="Post Image" style="max-width: 100%; height: auto; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        <% } %>
+
+        <!-- Author Line with Profile Picture and Clickable Username -->
+        <p>
+          <% 
+            let displayPhoto = post.photo; 
+            if (displayPhoto && !displayPhoto.startsWith('/uploads/PFP/')) {
+              displayPhoto = displayPhoto.replace('/uploads/profiles/', '/uploads/PFP/');
+            } 
+          %>
+
+          <% if (displayPhoto) { %>
+            <img src="<%= displayPhoto %>" alt="Profile Picture" style="width: 25px; height: 25px; border-radius: 50%; vertical-align: middle; margin-right: 5px;">
+          <% } else { %>
+            <img src="/uploads/PFP/default.jpg" alt="Default Profile Picture" style="width: 25px; height: 25px; border-radius: 50%; vertical-align: middle; margin-right: 5px;">
+          <% } %>
+          <small>By <a href="/profile/users/<%= post.author %>"><%= post.author %></a></small>
+        </p>
+
+        <p><small><%= post.date %></small></p>
+        <% if (post.category) { %>
+          <p><small>Category: <strong><%= post.category %></strong></small></p>
+        <% } %>
+
+        <div class="post-actions">
+          <form action="/blog/delete/<%= post.id %>" method="POST">
+            <button type="submit">Delete</button>
+          </form>
+          <form action="/blog/edit/<%= post.id %>" method="GET">
+            <button type="submit">Edit</button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <a href="/logout">Logout</a>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Messages</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <h1>My Conversations</h1>
+
+  <% if (conversations.length > 0) { %>
+    <ul>
+      <% conversations.forEach(convo => { %>
+        <li>
+          <a href="/messages/chat/<%= convo %>"><%= convo %></a>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>You have no conversations yet.</p>
+  <% } %>
+
+  <br>
+  <a href="/blog/dashboard">← Back to Dashboard</a>
+</body>
+</html>

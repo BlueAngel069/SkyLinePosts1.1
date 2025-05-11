@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Profile</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <h1><%= username %>'s Profile</h1>
+
+  <!-- Profile Picture Display -->
+  <% 
+    let displayPhoto = profile.photo;
+    if (displayPhoto && !displayPhoto.startsWith('/uploads/PFP/')) {
+      displayPhoto = displayPhoto.replace('/uploads/profiles/', '/uploads/PFP/');
+    }
+  %>
+
+  <% if (displayPhoto) { %>
+    <img src="<%= displayPhoto %>" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; display: block; margin-bottom: 1em;">
+  <% } else { %>
+    <img src="/uploads/PFP/default.jpg" alt="Default Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; display: block; margin-bottom: 1em;">
+  <% } %>
+
+  <form action="/profile" method="POST" enctype="multipart/form-data">
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username" value="<%= username %>" required><br><br>
+
+    <label for="bio">Bio:</label><br>
+    <textarea id="bio" name="bio" placeholder="Write something about yourself..."><%= profile.bio || '' %></textarea><br><br>
+
+    <label for="photo">Upload Profile Picture:</label><br>
+    <input type="file" name="photo" id="photo" accept="image/*"><br><br>
+
+    <button type="submit">Save Profile</button>
+  </form>
+
+  <br>
+  <a href="/blog/dashboard">← Back to Dashboard</a>
+</body>
+</html>
